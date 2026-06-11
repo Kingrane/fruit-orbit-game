@@ -183,7 +183,7 @@
         currentFruitIndex = nextFruitIndex;
         nextFruitIndex = Math.floor(Math.random() * 4);
         updateNextPreview();
-        setTimeout(function () { canShoot = true; }, 500);
+        setTimeout(function () { canShoot = true; }, 100);
     }
 
     function addScore(points, x, y) {
