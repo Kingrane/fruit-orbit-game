@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="melonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C5E1A5"/>
+      <stop offset="100%" stop-color="#689F38"/>
+    </linearGradient>
+  </defs>
+  <!-- Т-образная ветка (как у японских премиум-дынь) -->
+  <path d="M 50 24 L 50 14" stroke="#5D4037" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 40 14 Q 50 14 60 14" stroke="#5D4037" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- Тело дыни -->
+  <circle cx="50" cy="56" r="32" fill="url(#melonGrad)"/>
+  <!-- Узорная сеточка -->
+  <path d="M 30 36 C 40 30 60 30 70 36 M 22 56 C 35 50 65 50 78 56 M 30 76 C 40 82 60 82 70 76" stroke="#DCEDC8" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <path d="M 36 30 C 30 40 30 60 36 70 M 56 24 C 50 35 50 65 56 88 M 76 36 C 70 40 70 60 76 70" stroke="#DCEDC8" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <!-- Блик -->
+  <ellipse cx="34" cy="40" rx="10" ry="4" fill="#FFF" opacity="0.4" transform="rotate(-25 34 40)"/>
+  <!-- Мордашка -->
+  <circle cx="40" cy="56" r="4.2" fill="#2C3E50"/>
+  <circle cx="60" cy="56" r="4.2" fill="#2C3E50"/>
+  <circle cx="38" cy="54" r="1.3" fill="#FFF"/>
+  <circle cx="58" cy="54" r="1.3" fill="#FFF"/>
+  <ellipse cx="31" cy="62" rx="5.5" ry="3" fill="#FF8BA4"/>
+  <ellipse cx="69" cy="62" rx="5.5" ry="3" fill="#FF8BA4"/>
+  <path d="M 46 62 Q 50 68 54 62" stroke="#2C3E50" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+</svg>

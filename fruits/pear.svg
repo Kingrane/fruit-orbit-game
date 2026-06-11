@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="pearGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4E157"/>
+      <stop offset="100%" stop-color="#9E9D24"/>
+    </linearGradient>
+  </defs>
+  <!-- Веточка -->
+  <path d="M 50 26 Q 54 14 48 10" stroke="#5D4037" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M 52 20 Q 64 20 62 14 Q 52 14 52 20 Z" fill="#8BC34A"/>
+  <!-- Тело груши -->
+  <path d="M 50 24 C 42 24 38 40 32 50 C 24 62 18 70 24 80 C 32 92 68 92 76 80 C 82 70 76 62 68 50 C 62 40 58 24 50 24 Z" fill="url(#pearGrad)"/>
+  <!-- Блик -->
+  <ellipse cx="36" cy="54" rx="7" ry="3" fill="#FFF" opacity="0.4" transform="rotate(-35 36 54)"/>
+  <!-- Мордашка -->
+  <circle cx="41" cy="62" r="3.8" fill="#2C3E50"/>
+  <circle cx="59" cy="62" r="3.8" fill="#2C3E50"/>
+  <circle cx="39.2" cy="60.2" r="1.1" fill="#FFF"/>
+  <circle cx="57.2" cy="60.2" r="1.1" fill="#FFF"/>
+  <ellipse cx="33" cy="68" rx="5" ry="2.5" fill="#FF8BA4"/>
+  <ellipse cx="67" cy="68" rx="5" ry="2.5" fill="#FF8BA4"/>
+  <path d="M 47 67 Q 50 71 53 67" stroke="#2C3E50" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+</svg>

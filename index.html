@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Фруктовая Орбита</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍉</text></svg>">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+</head>
+
+<body>
+    <div id="game-container">
+        <div id="ui-overlay">
+            <div id="score-panel">
+                <div id="score-display">
+                    <span class="label">ОЧКИ</span>
+                    <span id="current-score">0</span>
+                </div>
+                <div id="best-score-display">
+                    <span class="label">РЕКОРД</span>
+                    <span id="best-score">0</span>
+                </div>
+            </div>
+            <div id="next-fruit-panel">
+                <span class="label">СЛЕДУЮЩИЙ</span>
+                <div id="next-fruit-preview"></div>
+            </div>
+        </div>
+        <canvas id="game-canvas"></canvas>
+        <div id="combo-text" class="hidden"></div>
+        <div id="game-over-overlay" class="hidden">
+            <div id="game-over-box">
+                <div class="box-emoji">😢</div>
+                <h1>ИГРА ОКОНЧЕНА</h1>
+                <p>Ваш счёт: <span id="final-score">0</span></p>
+                <button id="restart-btn" class="game-btn">ЗАНОВО</button>
+                <button id="multiply-btn" class="game-btn reward-btn">x2 НАГРАДА ▶</button>
+            </div>
+        </div>
+        <div id="start-overlay">
+            <div id="start-box">
+                <div class="box-emoji">🍉</div>
+                <h1>ФРУКТОВЫЙ ОРБИТА</h1>
+                <p>Совмещайте одинаковые фрукты!</p>
+                <button id="play-btn" class="game-btn play-btn">ИГРАТЬ</button>
+            </div>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="pineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF59D"/>
+      <stop offset="100%" stop-color="#FBC02D"/>
+    </linearGradient>
+  </defs>
+  <!-- Пышная колючая макушка -->
+  <path d="M 50 35 L 50 10 C 50 10 42 18 45 28 Z" fill="#2E7D32"/>
+  <path d="M 50 35 L 35 15 C 35 15 35 25 43 31 Z" fill="#4CAF50"/>
+  <path d="M 50 35 L 65 15 C 65 15 65 25 57 31 Z" fill="#4CAF50"/>
+  <path d="M 50 35 L 26 24 C 26 24 30 32 40 34 Z" fill="#8BC34A"/>
+  <path d="M 50 35 L 74 24 C 74 24 70 32 60 34 Z" fill="#8BC34A"/>
+  <!-- Овальное тело -->
+  <rect x="26" y="32" width="48" height="52" rx="24" ry="24" fill="url(#pineGrad)"/>
+  <!-- Мягкая колючая текстура (ромбики) -->
+  <path d="M 32 42 L 65 78 M 42 34 L 72 69 M 27 58 L 54 83 M 68 42 L 34 77 M 58 34 L 28 64 M 72 58 L 46 84" stroke="#F57F17" stroke-width="1.5" opacity="0.4"/>
+  <circle cx="38" cy="46" r="1.5" fill="#F57F17" opacity="0.4"/>
+  <circle cx="50" cy="40" r="1.5" fill="#F57F17" opacity="0.4"/>
+  <circle cx="62" cy="46" r="1.5" fill="#F57F17" opacity="0.4"/>
+  <circle cx="32" cy="58" r="1.5" fill="#F57F17" opacity="0.4"/>
+  <circle cx="50" cy="58" r="1.5" fill="#F57F17" opacity="0.4"/>
+  <circle cx="68" cy="58" r="1.5" fill="#F57F17" opacity="0.4"/>
+  <circle cx="38" cy="70" r="1.5" fill="#F57F17" opacity="0.4"/>
+  <circle cx="50" cy="76" r="1.5" fill="#F57F17" opacity="0.4"/>
+  <circle cx="62" cy="70" r="1.5" fill="#F57F17" opacity="0.4"/>
+  <!-- Мордашка -->
+  <circle cx="40" cy="56" r="3.8" fill="#2C3E50"/>
+  <circle cx="60" cy="56" r="3.8" fill="#2C3E50"/>
+  <circle cx="38.2" cy="54.2" r="1.1" fill="#FFF"/>
+  <circle cx="58.2" cy="54.2" r="1.1" fill="#FFF"/>
+  <ellipse cx="32" cy="62" rx="5" ry="2.5" fill="#FF8BA4"/>
+  <ellipse cx="68" cy="62" rx="5" ry="2.5" fill="#FF8BA4"/>
+  <path d="M 47 62 Q 50 66 53 62" stroke="#2C3E50" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>

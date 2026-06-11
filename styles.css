@@ -1,0 +1,338 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Nunito', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    /* Сделали градиент чуть более насыщенным и конфетным */
+    background: linear-gradient(160deg, #fff2f6 0%, #ffd1dc 30%, #fffde6 60%, #eafaf1 100%);
+    user-select: none;
+    touch-action: none;
+}
+
+#game-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#game-canvas {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+#ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 10;
+    pointer-events: none;
+}
+
+#score-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Общий стиль для объемных карточек */
+#score-display,
+#best-score-display {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    /* Жирный мультяшный контур и цветная тень */
+    border: 4px solid #5c0632;
+    box-shadow: 0 6px 0 #ff8da1, 0 12px 16px rgba(92, 6, 50, 0.15);
+}
+
+/* Игривый поворот карточек в разные стороны */
+#score-display {
+    transform: rotate(-1.5deg);
+}
+
+#best-score-display {
+    transform: rotate(1.5deg);
+    /* Другой цвет тени для разнообразия */
+    box-shadow: 0 6px 0 #ffb74d, 0 12px 16px rgba(92, 6, 50, 0.15);
+}
+
+.label {
+    font-size: 11px;
+    font-weight: 900;
+    color: #5c0632;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+#current-score,
+#best-score {
+    font-size: 26px;
+    font-weight: 900;
+    color: #5c0632;
+    /* Небольшая внутренняя глубина для цифр */
+    text-shadow: 1px 1px 0px #fff, 2px 2px 0px rgba(0, 0, 0, 0.05);
+}
+
+#next-fruit-panel {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 12px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    border: 4px solid #5c0632;
+    box-shadow: 0 6px 0 #81c784, 0 12px 16px rgba(92, 6, 50, 0.15);
+    transform: rotate(1deg) scale(1.05);
+}
+
+#next-fruit-preview {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#next-fruit-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 0px rgba(92, 6, 50, 0.2));
+}
+
+#combo-text {
+    position: absolute;
+    font-size: 42px;
+    font-weight: 900;
+    color: #ff6f00;
+    /* Супер-объемная обводка букв */
+    text-shadow:
+        -3px -3px 0 #fff,
+        3px -3px 0 #fff,
+        -3px 3px 0 #fff,
+        3px 3px 0 #fff,
+        4px 6px 0px rgba(92, 6, 50, 0.25);
+    z-index: 20;
+    pointer-events: none;
+    transition: none;
+}
+
+#combo-text.hidden {
+    display: none;
+}
+
+#game-over-overlay,
+#start-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(92, 6, 50, 0.35);
+    /* Более теплый оттенок размытия */
+    z-index: 100;
+    backdrop-filter: blur(8px);
+}
+
+#game-over-overlay.hidden,
+#start-overlay.hidden {
+    display: none;
+}
+
+#game-over-box,
+#start-box {
+    background: #ffffff;
+    border-radius: 32px;
+    padding: 44px 40px;
+    text-align: center;
+    /* Двойная тень: плотная цветная + мягкая рассеянная */
+    border: 6px solid #5c0632;
+    box-shadow:
+        0 14px 0 #ff8da1,
+        0 24px 50px rgba(92, 6, 50, 0.25);
+    max-width: 380px;
+    width: 90%;
+}
+
+.box-emoji {
+    font-size: 72px;
+    margin-bottom: 16px;
+    display: inline-block;
+    animation: float 2s ease-in-out infinite;
+}
+
+/* Анимация левитации с легким растяжением (squish-эффект) */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-12px) scale(1.08, 0.95);
+    }
+}
+
+#game-over-box h1,
+#start-box h1 {
+    font-size: 32px;
+    font-weight: 900;
+    color: #ff4081;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+    /* Белый баббл-эффект для заголовков */
+    text-shadow:
+        -3px -3px 0 #fff,
+        3px -3px 0 #fff,
+        -3px 3px 0 #fff,
+        3px 3px 0 #fff,
+        0px 5px 0px #5c0632;
+}
+
+#game-over-box p,
+#start-box p {
+    font-size: 18px;
+    color: #5c0632;
+    margin-bottom: 32px;
+    font-weight: 800;
+}
+
+/* Общие стили для объемных кнопок */
+.game-btn {
+    display: block;
+    width: 100%;
+    padding: 16px 28px;
+    border-radius: 20px;
+    font-size: 18px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    margin-bottom: 16px;
+    pointer-events: auto;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border: 4px solid #5c0632 !important;
+    position: relative;
+}
+
+/* Пружинящее поведение при нажатии */
+.game-btn:active {
+    transform: translateY(6px);
+}
+
+/* Кнопка "Играть" (Розовая) */
+.play-btn {
+    background: linear-gradient(135deg, #ff80ab, #ff4081);
+    color: #ffffff;
+    box-shadow: 0 8px 0 #c2185b, 0 15px 20px rgba(92, 6, 50, 0.2);
+    text-shadow: 0 2px 0 #c2185b, 1px 1px 0 #5c0632;
+}
+
+.play-btn:hover {
+    background: linear-gradient(135deg, #ff94b8, #ff508d);
+}
+
+.play-btn:active {
+    box-shadow: 0 2px 0 #c2185b, 0 6px 10px rgba(92, 6, 50, 0.2);
+}
+
+/* Кнопка "Заново" (Голубая) */
+#restart-btn {
+    background: linear-gradient(135deg, #4fc3f7, #0288d1);
+    color: #ffffff;
+    box-shadow: 0 8px 0 #0277bd, 0 15px 20px rgba(92, 6, 50, 0.2);
+    text-shadow: 0 2px 0 #0277bd, 1px 1px 0 #5c0632;
+}
+
+#restart-btn:hover {
+    background: linear-gradient(135deg, #64ccf8, #0394e3);
+}
+
+#restart-btn:active {
+    box-shadow: 0 2px 0 #0277bd, 0 6px 10px rgba(92, 6, 50, 0.2);
+}
+
+/* Кнопка Награды (Желтая) */
+.reward-btn {
+    background: linear-gradient(135deg, #ffd54f, #ffb300);
+    color: #5c0632;
+    box-shadow: 0 8px 0 #ff8f00, 0 15px 20px rgba(92, 6, 50, 0.2);
+    text-shadow: 0 1px 0 #ffffff;
+}
+
+.reward-btn:hover {
+    background: linear-gradient(135deg, #ffe066, #ffbe1a);
+}
+
+.reward-btn:active {
+    box-shadow: 0 2px 0 #ff8f00, 0 6px 10px rgba(92, 6, 50, 0.2);
+}
+
+.reward-btn:disabled {
+    background: linear-gradient(135deg, #e0e0e0, #bdbdbd);
+    color: #9e9e9e;
+    box-shadow: 0 4px 0 #9e9e9e;
+    cursor: default;
+    border-color: #bdbdbd !important;
+    text-shadow: none;
+}
+
+.reward-btn:disabled:active {
+    transform: none;
+}
+
+@media (max-width: 480px) {
+
+    #game-over-box,
+    #start-box {
+        padding: 36px 24px;
+        border-radius: 28px;
+    }
+
+    #game-over-box h1,
+    #start-box h1 {
+        font-size: 26px;
+    }
+
+    .game-btn {
+        font-size: 16px;
+        padding: 14px 22px;
+    }
+
+    .play-btn {
+        font-size: 18px;
+        padding: 16px 24px;
+    }
+
+    #current-score,
+    #best-score {
+        font-size: 22px;
+    }
+
+    .box-emoji {
+        font-size: 60px;
+    }
+}
