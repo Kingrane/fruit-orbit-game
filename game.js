@@ -691,6 +691,18 @@
         ctx.fillRect(0, 0, W, H);
     }
 
+    function drawDebugInfo() {
+        ctx.save();
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(8, H - 80, 200, 72);
+        ctx.fillStyle = '#fff';
+        ctx.font = '13px monospace';
+        ctx.fillText('curIdx: ' + currentFruitIndex + ' (' + FRUITS[currentFruitIndex].name + ')', 16, H - 58);
+        ctx.fillText('nextIdx: ' + nextFruitIndex + ' (' + FRUITS[nextFruitIndex].name + ')', 16, H - 38);
+        ctx.fillText('angle: ' + ((aimAngle * 180 / Math.PI).toFixed(1)) + '°', 16, H - 18);
+        ctx.restore();
+    }
+
     function gameLoop() {
         if (gameOver || isPaused) return;
         applyCenterGravity();
@@ -702,6 +714,7 @@
         drawAimLine();
         drawFruits();
         drawParticles();
+        drawDebugInfo();
         rafId = requestAnimationFrame(gameLoop);
     }
 
