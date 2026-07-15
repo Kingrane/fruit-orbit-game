@@ -197,6 +197,7 @@
     let currentFruitIndex = 0, nextFruitIndex = 0;
     let aimAngle = -Math.PI / 2;
     let touchActive = false;
+    let justTouched = false;
     let canShoot = true;
     let gameOver = false;
     let gameStarted = false;
@@ -1339,12 +1340,14 @@
             aimFromClient(e.clientX, e.clientY);
         });
         canvas.addEventListener('click', function (e) {
+            if (justTouched) return;
             if (!gameStarted || isPaused || gameOver) return;
             aimFromClient(e.clientX, e.clientY);
             shootFruit();
         });
         canvas.addEventListener('touchstart', function (e) {
             e.preventDefault();
+            justTouched = true;
             if (!gameStarted || isPaused || gameOver) return;
             if (e.touches && e.touches[0]) {
                 aimFromClient(e.touches[0].clientX, e.touches[0].clientY);
@@ -1366,6 +1369,7 @@
             }
             touchActive = false;
             shootFruit();
+            setTimeout(function () { justTouched = false; }, 500);
         }, { passive: false });
 
         /* Prevent context menu / text selection on long press */
