@@ -330,8 +330,12 @@
         if (H < 560) baseScale = isPortrait ? 0.40 : 0.34;
         else if (H < 700) baseScale = isPortrait ? 0.41 : 0.36;
         playRadius = (isPortrait ? W : Math.min(W, H)) * baseScale;
-        /* Scale down fruits on narrow screens so they don't crowd the field */
-        fruitScale = Math.min(1, Math.max(0.6, playRadius / 180));
+        /* Scale down fruits on narrow portrait screens so they don't crowd the field */
+        if (isPortrait && W < 520) {
+            fruitScale = Math.max(0.45, 0.5 + (W - 320) / 450);
+        } else {
+            fruitScale = 1;
+        }
         if ((!gameStarted || gameOver) && engine == null) {
             ctx.clearRect(0, 0, W, H);
             drawBackground();
@@ -1325,6 +1329,11 @@
             aimFromClient(e.clientX, e.clientY);
             shootFruit();
         });
+        canvas.addEventListener('touchstart', function (e) {
+            e.preventDefault();
+            if (!gameStarted || isPaused || gameOver) return;
+            aimFromClient(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
         canvas.addEventListener('touchmove', function (e) {
             e.preventDefault();
             if (!gameStarted || isPaused || gameOver) return;
@@ -1333,9 +1342,6 @@
         canvas.addEventListener('touchend', function (e) {
             e.preventDefault();
             if (!gameStarted || isPaused || gameOver) return;
-            if (e.changedTouches && e.changedTouches[0]) {
-                aimFromClient(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-            }
             shootFruit();
         }, { passive: false });
 
