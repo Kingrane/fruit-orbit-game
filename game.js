@@ -198,6 +198,7 @@
     let aimAngle = -Math.PI / 2;
     let touchActive = false;
     let justTouched = false;
+    let lastTouchX = 0, lastTouchY = 0;
     let canShoot = true;
     let gameOver = false;
     let gameStarted = false;
@@ -438,22 +439,21 @@
                     y: (dy / dist) * force
                 });
             }
-            var maxDist = playRadius - (body.circleRadius || 20);
-            if (dist > maxDist) {
-                var angle = Math.atan2(dy, dx);
-                Body.setPosition(body, {
-                    x: centerX + Math.cos(angle) * maxDist,
-                    y: centerY + Math.sin(angle) * maxDist
+        var maxDist = playRadius - (body.circleRadius || 20);
+        if (dist > maxDist) {
+            Body.setPosition(body, {
+                x: centerX - (dx / dist) * maxDist,
+                y: centerY - (dy / dist) * maxDist
+            });
+            var vel = body.velocity;
+            var radialVel = (dx * vel.x + dy * vel.y) / dist;
+            if (radialVel > 0) {
+                Body.setVelocity(body, {
+                    x: vel.x - (dx / dist) * radialVel * 1.5,
+                    y: vel.y - (dy / dist) * radialVel * 1.5
                 });
-                var vel = body.velocity;
-                var radialVel = (dx * vel.x + dy * vel.y) / dist;
-                if (radialVel > 0) {
-                    Body.setVelocity(body, {
-                        x: vel.x - (dx / dist) * radialVel * 1.5,
-                        y: vel.y - (dy / dist) * radialVel * 1.5
-                    });
-                }
             }
+        }
         }
     }
 
@@ -476,8 +476,12 @@
         }
     }
 
-    function shootFruit() {
+    function shootFruit(clientX, clientY) {
         if (!canShoot || gameOver || isPaused || !gameStarted || !engine) return;
+        if (clientX != null && clientY != null) {
+            var c = canvasCoords(clientX, clientY);
+            aimAngle = getAngle(c.x, c.y);
+        }
         canShoot = false;
         var spawnDist = playRadius * 0.92;
         var x = centerX + Math.cos(aimAngle) * spawnDist;
@@ -691,19 +695,6 @@
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, W, H);
     }
-
-    function drawDebugInfo() {
-        ctx.save();
-        ctx.fillStyle = 'rgba(0,0,0,0.7)';
-        ctx.fillRect(8, H - 80, 200, 72);
-        ctx.fillStyle = '#fff';
-        ctx.font = '13px monospace';
-        ctx.fillText('curIdx: ' + currentFruitIndex + ' (' + FRUITS[currentFruitIndex].name + ')', 16, H - 58);
-        ctx.fillText('nextIdx: ' + nextFruitIndex + ' (' + FRUITS[nextFruitIndex].name + ')', 16, H - 38);
-        ctx.fillText('angle: ' + ((aimAngle * 180 / Math.PI).toFixed(1)) + '°', 16, H - 18);
-        ctx.restore();
-    }
-
     function gameLoop() {
         if (gameOver || isPaused) return;
         applyCenterGravity();
@@ -715,7 +706,6 @@
         drawAimLine();
         drawFruits();
         drawParticles();
-        drawDebugInfo();
         rafId = requestAnimationFrame(gameLoop);
     }
 
@@ -1319,17 +1309,17 @@
     }
 
     /* ─── Input ─── */
+    function canvasCoords(clientX, clientY) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: (clientX - rect.left) * (canvas.width / rect.width),
+            y: (clientY - rect.top) * (canvas.height / rect.height)
+        };
+    }
+
+    function getAngle(cx, cy) { return Math.atan2(cy - centerY, cx - centerX); }
+
     function setupInput() {
-        function canvasCoords(clientX, clientY) {
-            var rect = canvas.getBoundingClientRect();
-            return {
-                x: (clientX - rect.left) * (canvas.width / rect.width),
-                y: (clientY - rect.top) * (canvas.height / rect.height)
-            };
-        }
-
-        function getAngle(cx, cy) { return Math.atan2(cy - centerY, cx - centerX); }
-
         function aimFromClient(clientX, clientY) {
             var c = canvasCoords(clientX, clientY);
             aimAngle = getAngle(c.x, c.y);
@@ -1350,7 +1340,9 @@
             justTouched = true;
             if (!gameStarted || isPaused || gameOver) return;
             if (e.touches && e.touches[0]) {
-                aimFromClient(e.touches[0].clientX, e.touches[0].clientY);
+                lastTouchX = e.touches[0].clientX;
+                lastTouchY = e.touches[0].clientY;
+                aimFromClient(lastTouchX, lastTouchY);
                 touchActive = true;
             }
         }, { passive: false });
@@ -1358,17 +1350,21 @@
             e.preventDefault();
             if (!gameStarted || isPaused || gameOver) return;
             if (e.touches && e.touches[0]) {
-                aimFromClient(e.touches[0].clientX, e.touches[0].clientY);
+                lastTouchX = e.touches[0].clientX;
+                lastTouchY = e.touches[0].clientY;
+                aimFromClient(lastTouchX, lastTouchY);
             }
         }, { passive: false });
         canvas.addEventListener('touchend', function (e) {
             e.preventDefault();
             if (!gameStarted || isPaused || gameOver) return;
             if (!touchActive && e.changedTouches && e.changedTouches[0]) {
-                aimFromClient(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+                lastTouchX = e.changedTouches[0].clientX;
+                lastTouchY = e.changedTouches[0].clientY;
+                aimFromClient(lastTouchX, lastTouchY);
             }
             touchActive = false;
-            shootFruit();
+            shootFruit(lastTouchX, lastTouchY);
             setTimeout(function () { justTouched = false; }, 500);
         }, { passive: false });
 
