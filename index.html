@@ -3,11 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Фруктовая Орбита</title>
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍉</text></svg>">
     <link rel="stylesheet" href="styles.css">
+    <script src="https://yandex.ru/games/sdk/v2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
 </head>
 
@@ -16,36 +19,125 @@
         <div id="ui-overlay">
             <div id="score-panel">
                 <div id="score-display">
-                    <span class="label">ОЧКИ</span>
+                    <span class="label" data-i18n="score">ОЧКИ</span>
                     <span id="current-score">0</span>
                 </div>
                 <div id="best-score-display">
-                    <span class="label">РЕКОРД</span>
+                    <span class="label" data-i18n="best">РЕКОРД</span>
                     <span id="best-score">0</span>
                 </div>
+                <div id="coins-display-hud">
+                    <span class="label" data-i18n="coins">МОНЕТЫ</span>
+                    <span id="hud-coins">0</span>
+                </div>
             </div>
-            <div id="next-fruit-panel">
-                <span class="label">СЛЕДУЮЩИЙ</span>
-                <div id="next-fruit-preview"></div>
+            <div id="top-right-controls">
+                <div class="icon-row">
+                    <button id="mute-btn" class="icon-btn" type="button" title="Звук" aria-label="Mute">
+                        <svg id="mute-icon-on" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        </svg>
+                        <svg id="mute-icon-off" class="hidden" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <line x1="23" y1="9" x2="17" y2="15"></line>
+                            <line x1="17" y1="9" x2="23" y2="15"></line>
+                        </svg>
+                    </button>
+                    <button id="menu-btn" class="icon-btn" type="button" title="Меню" aria-label="Menu">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round">
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <line x1="3" y1="12" x2="21" y2="12" />
+                            <line x1="3" y1="18" x2="21" y2="18" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="next-fruit-panel">
+                    <span class="label" data-i18n="next">СЛЕДУЮЩИЙ</span>
+                    <div id="next-fruit-preview"></div>
+                </div>
             </div>
         </div>
         <canvas id="game-canvas"></canvas>
         <div id="combo-text" class="hidden"></div>
-        <div id="game-over-overlay" class="hidden">
-            <div id="game-over-box">
-                <div class="box-emoji">😢</div>
-                <h1>ИГРА ОКОНЧЕНА</h1>
-                <p>Ваш счёт: <span id="final-score">0</span></p>
-                <button id="restart-btn" class="game-btn">ЗАНОВО</button>
-                <button id="multiply-btn" class="game-btn reward-btn">x2 НАГРАДА ▶</button>
+
+        <div id="pause-overlay" class="hidden">
+            <div id="pause-box" class="modal-box">
+                <div class="box-emoji">⏸️</div>
+                <h1 data-i18n="paused">ПАУЗА</h1>
+                <p class="pause-hint" data-i18n="pauseHint">Выход в меню: монеты ×0.5 от текущих очков</p>
+                <div class="modal-actions">
+                    <button id="pause-resume-btn" class="game-btn play-btn" type="button"
+                        data-i18n="resume">ПРОДОЛЖИТЬ</button>
+                    <button id="pause-exit-btn" class="game-btn menu-back-btn" type="button"
+                        data-i18n="exitToMenu">В МЕНЮ</button>
+                </div>
             </div>
         </div>
+
+        <div id="game-over-overlay" class="hidden">
+            <div id="game-over-box" class="modal-box">
+                <div class="box-emoji">😢</div>
+                <h1 data-i18n="gameOver">ИГРА ОКОНЧЕНА</h1>
+                <p class="score-line"><span data-i18n="yourScore">Ваш счёт</span>: <span id="final-score">0</span></p>
+                <p class="coins-earned-line">+ <span id="coins-earned">0</span> <span data-i18n="coinsWord">монет</span>
+                </p>
+                <div class="modal-actions">
+                    <button id="continue-btn" class="game-btn continue-btn" type="button"
+                        data-i18n="continueAd">ПРОДОЛЖИТЬ (реклама)</button>
+                    <button id="restart-btn" class="game-btn" type="button" data-i18n="again">ЗАНОВО</button>
+                    <button id="multiply-btn" class="game-btn reward-btn" type="button" data-i18n="x2reward">x2 МОНЕТЫ
+                        (реклама)</button>
+                    <button id="go-menu-btn" class="game-btn menu-back-btn" type="button" data-i18n="toMenu">В МЕНЮ</button>
+                </div>
+            </div>
+        </div>
+
         <div id="start-overlay">
-            <div id="start-box">
+            <div id="start-box" class="modal-box">
                 <div class="box-emoji">🍉</div>
-                <h1>ФРУКТОВАЯ ОРБИТА</h1>
-                <p>Совмещайте одинаковые фрукты!</p>
-                <button id="play-btn" class="game-btn play-btn">ИГРАТЬ</button>
+                <h1 data-i18n="title">ФРУКТОВАЯ ОРБИТА</h1>
+                <p class="subtitle-line" data-i18n="subtitle">Совмещайте одинаковые фрукты!</p>
+                <p class="how-to" data-i18n="howto">Наведите / тапните вокруг круга и отпустите, чтобы запустить фрукт.
+                    Два одинаковых сливаются в следующий. Не дайте фруктам долго выходить за пунктир.</p>
+                <div class="menu-coins">
+                    <span class="coin-icon">🪙</span>
+                    <span id="menu-coins">0</span>
+                </div>
+                <div class="modal-actions">
+                    <button id="play-btn" class="game-btn play-btn" type="button" data-i18n="play">ИГРАТЬ</button>
+                    <button id="shop-btn" class="game-btn shop-btn" type="button" data-i18n="shop">МАГАЗИН</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="shop-overlay" class="hidden">
+            <div id="shop-box" class="modal-box">
+                <div class="shop-header">
+                    <h1 data-i18n="shop">МАГАЗИН</h1>
+                    <div class="shop-coins-badge">
+                        <span class="coin-icon">🪙</span>
+                        <span id="shop-coins">0</span>
+                    </div>
+                </div>
+                <p class="shop-hint" data-i18n="shopHint">Монеты за очки. Скины для каждого фрукта.</p>
+                <button id="shop-ad-btn" class="game-btn shop-ad-btn" type="button"
+                    data-i18n="shopAdReward">▶ РЕКЛАМА · +15 МОНЕТ</button>
+                <div class="fruit-tabs-wrap">
+                    <button id="fruit-tab-prev" class="fruit-nav-btn" type="button" aria-label="Prev">‹</button>
+                    <div id="fruit-tabs" class="fruit-tabs" role="tablist"></div>
+                    <button id="fruit-tab-next" class="fruit-nav-btn" type="button" aria-label="Next">›</button>
+                </div>
+                <div id="skin-list" class="skin-list"></div>
+                <p id="shop-toast" class="shop-toast hidden"></p>
+                <div class="shop-footer">
+                    <button id="shop-close-btn" class="game-btn menu-back-btn" type="button"
+                        data-i18n="back">НАЗАД</button>
+                </div>
             </div>
         </div>
     </div>
