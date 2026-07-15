@@ -323,10 +323,12 @@
         canvas.height = H;
         centerX = W / 2;
         centerY = H / 2;
-        /* Slightly smaller circle on short phones so HUD doesn't cover the field */
-        var scale = H < 560 ? 0.34 : (H < 700 ? 0.36 : 0.38);
-        if (W < 380) scale = Math.min(scale, 0.35);
-        playRadius = Math.min(W, H) * scale;
+        /* Mobile: use width as anchor so the circle fills the screen better */
+        var isPortrait = H > W;
+        var baseScale = isPortrait ? 0.42 : 0.38;
+        if (H < 560) baseScale = isPortrait ? 0.40 : 0.34;
+        else if (H < 700) baseScale = isPortrait ? 0.41 : 0.36;
+        playRadius = (isPortrait ? W : Math.min(W, H)) * baseScale;
         if ((!gameStarted || gameOver) && engine == null) {
             ctx.clearRect(0, 0, W, H);
             drawBackground();
@@ -1295,27 +1297,44 @@
 
     /* ─── Input ─── */
     function setupInput() {
+        function canvasCoords(clientX, clientY) {
+            var rect = canvas.getBoundingClientRect();
+            return {
+                x: (clientX - rect.left) * (canvas.width / rect.width),
+                y: (clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+
         function getAngle(cx, cy) { return Math.atan2(cy - centerY, cx - centerX); }
+
+        function aimFromClient(clientX, clientY) {
+            var c = canvasCoords(clientX, clientY);
+            aimAngle = getAngle(c.x, c.y);
+        }
 
         canvas.addEventListener('mousemove', function (e) {
             if (!gameStarted || isPaused || gameOver) return;
-            aimAngle = getAngle(e.clientX, e.clientY);
+            aimFromClient(e.clientX, e.clientY);
         });
         canvas.addEventListener('click', function (e) {
             if (!gameStarted || isPaused || gameOver) return;
-            aimAngle = getAngle(e.clientX, e.clientY);
+            aimFromClient(e.clientX, e.clientY);
             shootFruit();
         });
+        canvas.addEventListener('touchstart', function (e) {
+            if (!gameStarted || isPaused || gameOver) return;
+            aimFromClient(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
         canvas.addEventListener('touchmove', function (e) {
             e.preventDefault();
             if (!gameStarted || isPaused || gameOver) return;
-            aimAngle = getAngle(e.touches[0].clientX, e.touches[0].clientY);
+            aimFromClient(e.touches[0].clientX, e.touches[0].clientY);
         }, { passive: false });
         canvas.addEventListener('touchend', function (e) {
             e.preventDefault();
             if (!gameStarted || isPaused || gameOver) return;
             if (e.changedTouches && e.changedTouches[0]) {
-                aimAngle = getAngle(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+                aimFromClient(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
             }
             shootFruit();
         }, { passive: false });
