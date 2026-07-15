@@ -36,6 +36,7 @@
             free: 'Бесплатно',
             shopAdReward: '▶ РЕКЛАМА · +50 МОНЕТ',
             shopAdGot: '+50 монет!',
+            comboWord: 'КОМБО',
             skinClassic: 'Классика',
             skinGold: 'Золотой',
             skinIce: 'Ледяной',
@@ -87,6 +88,7 @@
             free: 'Free',
             shopAdReward: '▶ AD · +50 COINS',
             shopAdGot: '+50 coins!',
+            comboWord: 'COMBO',
             skinClassic: 'Classic',
             skinGold: 'Gold',
             skinIce: 'Ice',
@@ -518,7 +520,7 @@
 
     function showCombo(multiplier, x, y) {
         var el = document.getElementById('combo-text');
-        el.textContent = 'COMBO x' + multiplier.toFixed(1);
+        el.textContent = t('comboWord') + ' x' + multiplier.toFixed(1);
         el.classList.remove('hidden');
         el.style.left = x + 'px';
         el.style.top = y + 'px';
