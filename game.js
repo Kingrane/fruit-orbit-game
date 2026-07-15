@@ -212,6 +212,7 @@
     let audioSuspendedByPlatform = false;
     let selectedShopFruit = 0;
     let shopToastTimer = null;
+    let fruitScale = 1;
 
     /* ownedSkins[fruitName] = [skinId, ...] ; equipped[fruitName] = skinId */
     let ownedSkins = {};
@@ -329,6 +330,8 @@
         if (H < 560) baseScale = isPortrait ? 0.40 : 0.34;
         else if (H < 700) baseScale = isPortrait ? 0.41 : 0.36;
         playRadius = (isPortrait ? W : Math.min(W, H)) * baseScale;
+        /* Scale down fruits on narrow screens so they don't crowd the field */
+        fruitScale = Math.min(1, Math.max(0.6, playRadius / 180));
         if ((!gameStarted || gameOver) && engine == null) {
             ctx.clearRect(0, 0, W, H);
             drawBackground();
@@ -354,7 +357,8 @@
 
     function createFruitBody(index, x, y) {
         var fruit = FRUITS[index];
-        var body = Bodies.circle(x, y, fruit.radius, {
+        var r = fruit.radius * fruitScale;
+        var body = Bodies.circle(x, y, r, {
             restitution: 0.2,
             friction: 0.5,
             density: 0.002,
@@ -589,8 +593,8 @@
     function drawFruitSprite(fruit, skinId, cx, cy, alpha) {
         var img = FRUIT_IMAGES[fruit.name];
         var skin = getSkinDef(skinId || 'classic');
-        var scale = fruit.drawScale || 2.2;
-        var size = fruit.radius * scale;
+        var s = (fruit.drawScale || 2.2) * fruitScale;
+        var size = fruit.radius * s;
         var yOff = fruit.yOffset ? size * fruit.yOffset : 0;
         ctx.save();
         ctx.globalAlpha = alpha == null ? 1 : alpha;
@@ -608,7 +612,7 @@
         } else {
             ctx.fillStyle = fruit.color;
             ctx.beginPath();
-            ctx.arc(cx, cy, fruit.radius, 0, Math.PI * 2);
+            ctx.arc(cx, cy, fruit.radius * fruitScale, 0, Math.PI * 2);
             ctx.fill();
         }
         ctx.restore();
@@ -645,8 +649,8 @@
             var skinId = body.skinId || getEquippedSkin(fruit.name);
             var img = FRUIT_IMAGES[fruit.name];
             var skin = getSkinDef(skinId);
-            var scale = fruit.drawScale || 2.2;
-            var size = fruit.radius * scale;
+            var s = (fruit.drawScale || 2.2) * fruitScale;
+            var size = fruit.radius * s;
             var yOff = fruit.yOffset ? size * fruit.yOffset : 0;
             ctx.save();
             ctx.translate(body.position.x, body.position.y);
@@ -665,7 +669,7 @@
             } else {
                 ctx.fillStyle = fruit.color;
                 ctx.beginPath();
-                ctx.arc(0, 0, fruit.radius, 0, Math.PI * 2);
+                ctx.arc(0, 0, fruit.radius * fruitScale, 0, Math.PI * 2);
                 ctx.fill();
             }
             ctx.restore();
@@ -1321,10 +1325,6 @@
             aimFromClient(e.clientX, e.clientY);
             shootFruit();
         });
-        canvas.addEventListener('touchstart', function (e) {
-            if (!gameStarted || isPaused || gameOver) return;
-            aimFromClient(e.touches[0].clientX, e.touches[0].clientY);
-        }, { passive: false });
         canvas.addEventListener('touchmove', function (e) {
             e.preventDefault();
             if (!gameStarted || isPaused || gameOver) return;
