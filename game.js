@@ -34,8 +34,8 @@
             bought: 'Куплено!',
             equippedToast: 'Скин надет',
             free: 'Бесплатно',
-            shopAdReward: '▶ РЕКЛАМА · +15 МОНЕТ',
-            shopAdGot: '+15 монет!',
+            shopAdReward: '▶ РЕКЛАМА · +50 МОНЕТ',
+            shopAdGot: '+50 монет!',
             skinClassic: 'Классика',
             skinGold: 'Золотой',
             skinIce: 'Ледяной',
@@ -85,8 +85,8 @@
             bought: 'Purchased!',
             equippedToast: 'Skin equipped',
             free: 'Free',
-            shopAdReward: '▶ AD · +15 COINS',
-            shopAdGot: '+15 coins!',
+            shopAdReward: '▶ AD · +50 COINS',
+            shopAdGot: '+50 coins!',
             skinClassic: 'Classic',
             skinGold: 'Gold',
             skinIce: 'Ice',
@@ -148,7 +148,7 @@
 
     /* Economy: coins are scarce — full wardrobe takes many runs + ads */
     const COIN_SCORE_DIVISOR = 50; /* was 10 — ~5× fewer coins from score */
-    const SHOP_AD_COINS = 15;
+    const SHOP_AD_COINS = 50;
 
     /* Price scales with fruit tier so bigger fruits cost more */
     function skinPrice(fruitIndex, basePrice) {
