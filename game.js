@@ -196,6 +196,7 @@
     let isPaused = false;
     let currentFruitIndex = 0, nextFruitIndex = 0;
     let aimAngle = -Math.PI / 2;
+    let touchActive = false;
     let canShoot = true;
     let gameOver = false;
     let gameStarted = false;
@@ -1332,16 +1333,25 @@
         canvas.addEventListener('touchstart', function (e) {
             e.preventDefault();
             if (!gameStarted || isPaused || gameOver) return;
-            aimFromClient(e.touches[0].clientX, e.touches[0].clientY);
+            if (e.touches && e.touches[0]) {
+                aimFromClient(e.touches[0].clientX, e.touches[0].clientY);
+                touchActive = true;
+            }
         }, { passive: false });
         canvas.addEventListener('touchmove', function (e) {
             e.preventDefault();
             if (!gameStarted || isPaused || gameOver) return;
-            aimFromClient(e.touches[0].clientX, e.touches[0].clientY);
+            if (e.touches && e.touches[0]) {
+                aimFromClient(e.touches[0].clientX, e.touches[0].clientY);
+            }
         }, { passive: false });
         canvas.addEventListener('touchend', function (e) {
             e.preventDefault();
             if (!gameStarted || isPaused || gameOver) return;
+            if (!touchActive && e.changedTouches && e.changedTouches[0]) {
+                aimFromClient(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+            }
+            touchActive = false;
             shootFruit();
         }, { passive: false });
 
