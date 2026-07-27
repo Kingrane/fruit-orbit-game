@@ -34,7 +34,7 @@
             bought: 'Куплено!',
             equippedToast: 'Скин надет',
             free: 'Бесплатно',
-            shopAdReward: '▶ РЕКЛАМА · +50 МОНЕТ',
+            shopAdReward: 'РЕКЛАМА · +50 МОНЕТ',
             shopAdGot: '+50 монет!',
             comboWord: 'КОМБО',
             skinClassic: 'Классика',
@@ -86,7 +86,7 @@
             bought: 'Purchased!',
             equippedToast: 'Skin equipped',
             free: 'Free',
-            shopAdReward: '▶ AD · +50 COINS',
+            shopAdReward: 'AD · +50 COINS',
             shopAdGot: '+50 coins!',
             comboWord: 'COMBO',
             skinClassic: 'Classic',
@@ -1176,7 +1176,7 @@
             priceEl.className = 'skin-price';
             if (price === 0) priceEl.textContent = t('free');
             else if (owned) priceEl.textContent = t('owned');
-            else priceEl.textContent = '🪙 ' + price;
+            else priceEl.innerHTML = '<svg class="coin-icon" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="url(#coinGrad)" stroke="#B71C1C" stroke-width="1.5"/><circle cx="12" cy="12" r="7.5" fill="none" stroke="#FFF" stroke-width="1" opacity="0.6"/><text x="12" y="16.2" font-family="Arial, sans-serif" font-weight="900" font-size="12" fill="#5C0632" text-anchor="middle">¢</text></svg> ' + price;
             info.appendChild(priceEl);
             card.appendChild(info);
 
@@ -1376,21 +1376,47 @@
     }
 
     /* ─── Yandex SDK ─── */
+    let gameReadyCalled = false;
+    let imagesLoaded = false;
+    let sdkDone = false;
+
+    function markGameReady() {
+        if (gameReadyCalled) return;
+        gameReadyCalled = true;
+        if (ysdk && ysdk.features && ysdk.features.LoadingAPI) {
+            try {
+                ysdk.features.LoadingAPI.ready();
+                console.log('[Yandex SDK] LoadingAPI.ready() called successfully');
+            } catch (e) {
+                console.error('[Yandex SDK] LoadingAPI.ready() error:', e);
+            }
+        }
+    }
+
+    function checkReadyToPlay() {
+        if (imagesLoaded && sdkDone) {
+            updateCoinsUI();
+            updateMuteUI();
+            applyI18n();
+            var shopAd = document.getElementById('shop-ad-btn');
+            if (shopAd) shopAd.textContent = t('shopAdReward');
+            if (ctx) {
+                ctx.clearRect(0, 0, W, H);
+                drawBackground();
+                drawPlayfield();
+            }
+            markGameReady();
+        }
+    }
+
     function initYandexSDK(done) {
         if (typeof YaGames === 'undefined') {
+            sdkDone = true;
             done();
             return;
         }
         YaGames.init().then(function (sdk) {
             ysdk = sdk;
-
-            try {
-                var sdkLang = ysdk.environment && ysdk.environment.i18n && ysdk.environment.i18n.lang;
-                if (sdkLang && String(sdkLang).toLowerCase().indexOf('en') === 0) lang = 'en';
-                else lang = 'ru';
-            } catch (e) {
-                lang = 'ru';
-            }
             applyI18n();
 
             if (typeof ysdk.on === 'function') {
@@ -1410,16 +1436,14 @@
                     applyProgress(data);
                 }
             }).catch(function () { /* guest / no cloud — local ok */ })
-                .finally(function () { done(); });
+                .finally(function () {
+                    sdkDone = true;
+                    done();
+                });
         }).catch(function () {
+            sdkDone = true;
             done();
         });
-    }
-
-    function markGameReady() {
-        if (ysdk && ysdk.features && ysdk.features.LoadingAPI) {
-            try { ysdk.features.LoadingAPI.ready(); } catch (e) { /* ignore */ }
-        }
     }
 
     function init() {
@@ -1538,20 +1562,14 @@
             window.visualViewport.addEventListener('resize', resize);
         }
 
+        initYandexSDK(function () {
+            checkReadyToPlay();
+        });
+
         loadFruitImages(function () {
+            imagesLoaded = true;
             updateNextPreview();
-            initYandexSDK(function () {
-                updateCoinsUI();
-                updateMuteUI();
-                applyI18n();
-                var shopAd = document.getElementById('shop-ad-btn');
-                if (shopAd) shopAd.textContent = t('shopAdReward');
-                ctx.clearRect(0, 0, W, H);
-                drawBackground();
-                drawPlayfield();
-                /* Menu is visible — player can start → LoadingAPI.ready() */
-                markGameReady();
-            });
+            checkReadyToPlay();
         });
     }
 
